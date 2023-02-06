@@ -1,8 +1,9 @@
 ## Top-Down Beats Bottom-Up in 3D Instance Segmentation
 
 **News**:
- * :fire: February, 2023. Source code has been published.
  * :fire: February 6, 2023. We achived SOTA results on S3DIS validation subset (mAP@50) and ScanNet test subset (mAP@25).
+ * :fire: February, 2023. Source code has been published.
+ 
 
 This repository contains an implementation of TD3D, a 3D instance segmentation method introduced in our paper:
 
