@@ -2,7 +2,8 @@
 
 **News**:
  * :fire: February, 2023. Source code has been published.
- 
+ * :fire: February 6, 2023. We achived SOTA results on S3DIS (mAP@50) validation dataset and Scannet test dataset (mAP@25).
+
 This repository contains an implementation of TD3D, a 3D instance segmentation method introduced in our paper:
 
 > **Top-Down Beats Bottom-Up in 3D Instance Segmentation**<br>
@@ -13,6 +14,7 @@ This repository contains an implementation of TD3D, a 3D instance segmentation m
 > <br>
 > Samsung AI Center Moscow <br>
 > 
+<p align="center"><img src="https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_scannet.png" alt="drawing" width="90%"/></p>
 
 ### Installation
 For convenience, we provide a [Dockerfile](docker/Dockerfile).
@@ -61,14 +63,14 @@ python tools/test.py configs/td3d_is/td3d_is_scannet-3d-18class.py \
 
 | Dataset | mAP@0.25 | mAP@0.5 | mAP | Download |
 |:-------:|:--------:|:-------:|:--------:|:--------:|
-| ScanNet | 81.3 | 71.1 | 46.2 | [model]() &#124; [config]() |
-| S3DIS (5 area) | 82.8 | 66.5 | 47.4 | [model]() &#124; [config]() |
-| S3DIS (5 area) <br /> (ScanNet pretrain) | 85.6 | 75.5 | 61.1 | [model]() &#124; [config]() |
-| Scannet200 | 39.7 | 33.3 | 22.2 | [model]() &#124; [config]() |
+| ScanNet | 81.3 | 71.1 | 46.2 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/epoch_33.pth) &#124; [config](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_is_scannet-3d-18class_public.py) |
+| S3DIS (5 area) | 82.8 | 66.5 | 47.4 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/epoch_21.pth) &#124; [config](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_is_s3dis-3d-5class_public.py) |
+| S3DIS (5 area) <br /> (ScanNet pretrain) | 85.6 | 75.5 | 61.1 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/epoch_6.pth) &#124; [config](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_is_s3dis-3d-5class_public.py) |
+| Scannet200 | 39.7 | 33.3 | 22.2 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/epoch_28.pth) &#124; [config](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_is_scannet200-3d-198class_public.py) |
 
-<!-- ### Example Detections
+### Examples
 
-<p align="center"><img src="./resources/github.png" alt="drawing" width="90%"/></p> -->
+<p align="center"><img src="https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d.png" alt="drawing" width="90%"/></p>
 
 <!-- ### Citation
 
