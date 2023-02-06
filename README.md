@@ -2,7 +2,7 @@
 
 **News**:
  * :fire: February, 2023. Source code has been published.
- * :fire: February 6, 2023. We achived SOTA results on S3DIS (mAP@50) validation dataset and Scannet test dataset (mAP@25).
+ * :fire: February 6, 2023. We achived SOTA results on S3DIS (mAP@50) validation dataset and ScanNet test dataset (mAP@25).
 
 This repository contains an implementation of TD3D, a 3D instance segmentation method introduced in our paper:
 
