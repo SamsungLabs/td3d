@@ -27,7 +27,7 @@ For convenience, we provide a [Dockerfile](docker/Dockerfile).
 
 Alternatively, you can install all required packages manually. This implementation is based on [mmdetection3d](https://github.com/open-mmlab/mmdetection3d) framework.
 
-Please refer to the original installation guide [getting_started.md](docs/getting_started.md), including MinkowskiEngine installation, replacing open-mmlab/mmdetection3d with samsunglabs/td3d.
+Please refer to the original installation guide [getting_started.md](docs/en/getting_started.md), including MinkowskiEngine installation, replacing open-mmlab/mmdetection3d with samsunglabs/td3d.
 
 Most of the `TD3D`-related code locates in the following files: 
 [detectors/td3d_instance_segmentor.py](mmdet3d/models/detectors/td3d_instance_segmentor.py),
