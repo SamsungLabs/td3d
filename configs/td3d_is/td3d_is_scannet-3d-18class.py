@@ -38,9 +38,9 @@ model = dict(
             min_pts_threshold=10)),
     train_cfg=dict(num_rois=2),
     test_cfg=dict(
-        nms_pre=100,
+        nms_pre=1200,
         iou_thr=.4,
-        score_thr=.15,
+        score_thr=.1,
         binary_score_thr=0.2))
 
 optimizer = dict(type='AdamW', lr=0.001, weight_decay=0.0001)
