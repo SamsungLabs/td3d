@@ -37,7 +37,7 @@ Most of the `TD3D`-related code locates in the following files:
 ### Getting Started
 
 Please see [getting_started.md](docs/en/getting_started.md) for basic usage examples.
-We follow the `mmdetection3d` data preparation protocol described in [scannet](data/scannet), [s3dis](data/s3dis).
+We follow the `mmdetection3d` data preparation protocol described in [s3dis](data/s3dis) for S3DIS and in [scannet](data/scannet) for ScanNet and ScanNet200.
 
 
 **Training**
