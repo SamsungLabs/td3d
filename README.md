@@ -73,11 +73,11 @@ python tools/test.py configs/td3d_is/td3d_is_scannet-3d-18class.py \
 
 <p align="center"><img src="https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d.png" alt="drawing" width="90%"/></p>
 
-<!-- ### Citation
+### Citation
 
 If you find this work useful for your research, please cite our paper:
 ```
-@misc{https://doi.org/10.48550/arxiv.2302.02871,
+@misc{kolodiazhnyi2023topdown,
   doi = {10.48550/ARXIV.2302.02871},
   url = {https://arxiv.org/abs/2302.02871},
   author = {Kolodiazhnyi, Maksim and Rukhovich, Danila and Vorontsova, Anna and Konushin, Anton},
@@ -85,4 +85,4 @@ If you find this work useful for your research, please cite our paper:
   publisher = {arXiv},
   year = {2023}
 }
-``` -->
+```
