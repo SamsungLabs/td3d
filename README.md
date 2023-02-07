@@ -1,8 +1,8 @@
 ## Top-Down Beats Bottom-Up in 3D Instance Segmentation
 
 **News**:
- * :fire: February 6, 2023. We achived SOTA results on S3DIS validation subset (mAP@50) and ScanNet test subset (mAP@25).
- * :fire: February, 2023. Source code has been published.
+ * :fire: February 6, 2023. We achieved SOTA results on the S3DIS validation subset (mAP@50) and ScanNet test subset (mAP@25).
+ * :fire: February 2023. The source code has been published.
  
 
 This repository contains an implementation of TD3D, a 3D instance segmentation method introduced in our paper:
@@ -44,7 +44,7 @@ python tools/train.py configs/td3d_is/td3d_is_scannet-3d-18class.py
 
 **Testing**
 
-Test pre-trained model using [test](tools/test.py) with `TD3D` [configs](configs/td3d_is). For best quality on Scannet and S3DIS, set `score_thr` to `0.1` and `nms_pre` to `1200` in configs. For best quality on Scannet200, set `score_thr` to `0.07` and `nms_pre` to `300`:
+Test pre-trained model using [test](tools/test.py) with `TD3D` [configs](configs/td3d_is). To achieve the best results on Scannet and S3DIS, set `score_thr` to `0.1` and `nms_pre` to `1200` in configs. For Scannet200, set `score_thr` to `0.07` and `nms_pre` to `300`:
 ```shell
 python tools/test.py configs/td3d_is/td3d_is_scannet-3d-18class.py \
     work_dirs/td3d_is_scannet-3d-18class/latest.pth --eval mAP
@@ -77,5 +77,12 @@ python tools/test.py configs/td3d_is/td3d_is_scannet-3d-18class.py \
 
 If you find this work useful for your research, please cite our paper:
 ```
-
+@misc{https://doi.org/10.48550/arxiv.2302.02871,
+  doi = {10.48550/ARXIV.2302.02871},
+  url = {https://arxiv.org/abs/2302.02871},
+  author = {Kolodiazhnyi, Maksim and Rukhovich, Danila and Vorontsova, Anna and Konushin, Anton},
+  title = {Top-Down Beats Bottom-Up in 3D Instance Segmentation},
+  publisher = {arXiv},
+  year = {2023}
+}
 ``` -->
