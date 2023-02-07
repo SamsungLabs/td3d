@@ -14,6 +14,8 @@ This repository contains an implementation of TD3D, a 3D instance segmentation m
 > [Anton Konushin](https://scholar.google.com/citations?user=ZT_k-wMAAAAJ)
 > <br>
 > Samsung AI Center Moscow <br>
+> https://arxiv.org/abs/2302.02871
+
 > 
 <p align="center"><img src="https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_scannet.png" alt="drawing" width="90%"/></p>
 
