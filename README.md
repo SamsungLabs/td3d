@@ -69,10 +69,10 @@ python tools/test.py configs/td3d_is/td3d_is_scannet-3d-18class.py \
 
 | Dataset | mAP@0.25 | mAP@0.5 | mAP | Download |
 |:-------:|:--------:|:-------:|:--------:|:--------:|
-| ScanNet | 81.3 | 71.1 | 46.2 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/epoch_33.pth) &#124; [config](configs/td3d_is/td3d_is_scannet-3d-18class.py) |
-| S3DIS (5 area) | 82.8 | 66.5 | 47.4 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/epoch_21.pth) &#124; [config](configs/td3d_is/td3d_is_s3dis-3d-5class.py) |
-| S3DIS (5 area) <br /> (ScanNet pretrain) | 85.6 | 75.5 | 61.0 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/epoch_6.pth) &#124; [config](configs/td3d_is/td3d_is_s3dis-3d-5class.py) |
-| Scannet200 | 39.7 | 33.3 | 22.2 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/epoch_28.pth) &#124; [config](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_is_scannet200-3d-198class_public.py) |
+| ScanNet | 81.3 | 71.1 | 46.2 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_scannet.pth) &#124; [config](configs/td3d_is/td3d_is_scannet-3d-18class.py) |
+| S3DIS (5 area) | 82.8 | 66.5 | 47.4 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_s3dis.pth) &#124; [config](configs/td3d_is/td3d_is_s3dis-3d-5class.py) |
+| S3DIS (5 area) <br /> (ScanNet pretrain) | 85.6 | 75.5 | 61.0 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_s3dis_pretrain.pth) &#124; [config](configs/td3d_is/td3d_is_s3dis-3d-5class.py) |
+| Scannet200 | 40.4 | 34.8 | 23.1 | [model](https://github.com/SamsungLabs/td3d/releases/download/v1.0.0/td3d_scannet200.pth) &#124; [config](configs/td3d_is/td3d_is_scannet200-3d-18class.py) |
 
 ### Examples
 
