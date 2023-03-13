@@ -11,7 +11,6 @@ def aggregate_predictions(masks, labels, scores, valid_class_ids):
 
     Args:
         masks (list[torch.Tensor]): Per scene predicted instance masks.
-            Recommented dtype is torch.bool.
         labels (list[torch.Tensor]): Per scene predicted instance labels.
         scores (list[torch.Tensor]): Per scene predicted instance scores.
         valid_class_ids (tuple[int]): Ids of valid categories.
@@ -21,15 +20,15 @@ def aggregate_predictions(masks, labels, scores, valid_class_ids):
     """
     infos = []
     for id, (mask, label, score) in enumerate(zip(masks, labels, scores)):
-        mask = mask.numpy()
-        label = label.numpy()
-        score = score.numpy()
+        mask = mask.clone().numpy()
+        label = label.clone().numpy()
+        score = score.clone().numpy()
         info = dict()
         for i in range(mask.shape[0]):
             # match pred_instance['filename'] from assign_instances_for_scan
             file_name = f'{id}_{i}'
             info[file_name] = dict()
-            info[file_name]['mask'] = mask[i]
+            info[file_name]['mask'] = mask[i].astype(np.int)
             info[file_name]['label_id'] = valid_class_ids[label[i]]
             info[file_name]['conf'] = score[i]
         infos.append(info)
@@ -51,8 +50,8 @@ def rename_gt(gt_semantic_masks, gt_instance_masks, valid_class_ids):
     renamed_instance_masks = []
     for semantic_mask, instance_mask in zip(gt_semantic_masks,
                                             gt_instance_masks):
-        semantic_mask = semantic_mask.numpy()
-        instance_mask = instance_mask.numpy()
+        semantic_mask = semantic_mask.clone().numpy()
+        instance_mask = instance_mask.clone().numpy()
         unique = np.unique(instance_mask)
         assert len(unique) < 1000
         for i in unique:
@@ -115,12 +114,12 @@ def instance_seg_eval_v2(gt_semantic_masks,
         valid_class_ids=valid_class_ids,
         class_labels=class_labels,
         id_to_label=id_to_label)
-    header = ['classes', 'AP_0.25', 'AP_0.50', 'AP']
+    header = ['classes', 'AP_0.25', 'AP_0.50', 'AP', 'Prec_0.50', 'Rec_0.50']
     rows = []
     for label, data in metrics['classes'].items():
-        aps = [data['ap25%'], data['ap50%'], data['ap']]
+        aps = [data['ap25%'], data['ap50%'], data['ap'], data['prec50%'], data['rec50%']]
         rows.append([label] + [f'{ap:.4f}' for ap in aps])
-    aps = metrics['all_ap_25%'], metrics['all_ap_50%'], metrics['all_ap']
+    aps = metrics['all_ap_25%'], metrics['all_ap_50%'], metrics['all_ap'], metrics['all_prec_50%'], metrics['all_rec_50%']
     footer = ['Overall'] + [f'{ap:.4f}' for ap in aps]
     table = AsciiTable([header] + rows + [footer])
     table.inner_footing_row_border = True

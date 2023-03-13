@@ -447,7 +447,9 @@ class S3DISSegDataset(_S3DISSegDataset):
 
 @DATASETS.register_module()
 class S3DISInstanceSegDataset(S3DISDataset):
-    VALID_CLASS_IDS = (7, 8, 9, 10, 11)
+    CLASSES = ('ceiling', 'floor', 'wall', 'beam', 'column', 'window', 'door',
+               'table', 'chair', 'sofa', 'bookcase', 'board', 'clutter')
+    VALID_CLASS_IDS = tuple(range(len(CLASSES)))
 
     def _build_default_pipeline(self):
         """Build the default pipeline for this dataset."""
