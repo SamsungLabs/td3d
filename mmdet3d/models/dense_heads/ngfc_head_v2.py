@@ -312,7 +312,7 @@ class NgfcV2Assigner:
         self.padding = padding
 
     @torch.no_grad()
-    def assign(self, points, gt_bboxes, img_meta):
+    def assign(self, points, gt_bboxes, gt_labels, img_meta):
         # -> object id or -1 for each point
         float_max = points[0].new_tensor(1e8)
         n_levels = len(points)

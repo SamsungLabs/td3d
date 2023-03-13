@@ -339,7 +339,7 @@ class PointSegClassMappingV2(object):
         mask = converted_pts_sem_mask >= 0
         pts_instance_mask = results['pts_instance_mask']
         instance_ids = np.unique(pts_instance_mask[mask])
-        assert len(instance_ids) == len(results['gt_bboxes_3d'])
+        # assert len(instance_ids) == len(results['gt_bboxes_3d'])
         mapping = -np.ones(
             pts_instance_mask.max() + 1, dtype=np.int)
         for i, instance_id in enumerate(instance_ids):

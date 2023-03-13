@@ -173,7 +173,6 @@ class TD3DInstanceHead(BaseModule):
         self.cls_conv = ME.MinkowskiConvolution(
             in_channels, n_classes, kernel_size=1, bias=True, dimension=3)
         
-
     def init_weights(self):
         nn.init.normal_(self.reg_conv.kernel, std=0.01)
         nn.init.normal_(self.cls_conv.kernel, std=0.01)
@@ -295,7 +294,7 @@ class TD3DInstanceHead(BaseModule):
                      gt_labels,
                      img_meta):
 
-        assigned_ids = self.first_assigner.assign(points, gt_bboxes, img_meta)
+        assigned_ids = self.first_assigner.assign(points, gt_bboxes, gt_labels, img_meta)
         bbox_preds = torch.cat(bbox_preds)
         cls_preds = torch.cat(cls_preds)
         points = torch.cat(points)
@@ -399,7 +398,7 @@ class TD3DInstanceHead(BaseModule):
         losses = self._loss_first(bbox_preds, cls_preds, locations, 
                             gt_bboxes, gt_labels, img_metas)
         #second stage
-        bbox_list = self._get_bboxes_train(bbox_preds, cls_preds, locations, gt_bboxes, img_metas)
+        bbox_list = self._get_bboxes_train(bbox_preds, cls_preds, locations, gt_bboxes, gt_labels, img_metas)
         assigned_bbox_list = []
         for i in range(len(bbox_list)):
             assigned_ids = self.second_assigner.assign(bbox_list[i][0], gt_bboxes[i])
@@ -463,8 +462,8 @@ class TD3DInstanceHead(BaseModule):
         points_masks = voxels_masks[inverse_mapping].T.bool()
         return points_masks, labels, scores
 
-    def _get_bboxes_single_train(self, bbox_preds, cls_preds, locations, gt_bboxes, img_meta):
-        assigned_ids = self.first_assigner.assign(locations, gt_bboxes, img_meta)
+    def _get_bboxes_single_train(self, bbox_preds, cls_preds, locations, gt_bboxes, gt_labels, img_meta):
+        assigned_ids = self.first_assigner.assign(locations, gt_bboxes, gt_labels, img_meta)
         scores = torch.cat(cls_preds).sigmoid()
         bbox_preds = torch.cat(bbox_preds)
         locations = torch.cat(locations)
@@ -500,7 +499,7 @@ class TD3DInstanceHead(BaseModule):
             results.append(result)
         return results
 
-    def _get_bboxes_train(self, bbox_preds, cls_preds, locations, gt_bboxes, img_metas):
+    def _get_bboxes_train(self, bbox_preds, cls_preds, locations, gt_bboxes, gt_labels, img_metas):
         results = []
         for i in range(len(img_metas)):
             result = self._get_bboxes_single_train(
@@ -508,6 +507,7 @@ class TD3DInstanceHead(BaseModule):
                 cls_preds=[x[i] for x in cls_preds],
                 locations=[x[i] for x in locations],
                 gt_bboxes=gt_bboxes[i],
+                gt_labels=gt_labels[i],
                 img_meta=img_metas[i])
             results.append(result)
         return results
@@ -545,6 +545,7 @@ class TD3DInstanceHead(BaseModule):
         return results
 
     def forward_test(self, x, points, img_metas):
+
         #first stage
         bbox_preds, cls_preds, locations = self._forward_first(x[1:])
         bbox_list = self._get_bboxes_test(bbox_preds, cls_preds, locations, self.test_cfg, img_metas)
@@ -617,3 +618,53 @@ class TD3DInstanceHead(BaseModule):
             origin=(.5, .5, .5))
 
         return nms_bboxes, nms_scores, nms_labels
+
+@BBOX_ASSIGNERS.register_module()
+class S3DISAssigner:
+    def __init__(self, top_pts_threshold, label2level):
+        # top_pts_threshold: per box
+        # label2level: list of len n_classes
+        #     scannet: [0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0]
+        #       s3dis: [1, 0, 1, 1, 0]
+        self.top_pts_threshold = top_pts_threshold
+        self.label2level = label2level
+
+    @torch.no_grad()
+    def assign(self, points, gt_bboxes, gt_labels, img_meta):
+        # -> object id or -1 for each point
+        float_max = points[0].new_tensor(1e8)
+        levels = torch.cat([points[i].new_tensor(i, dtype=torch.long).expand(len(points[i]))
+                            for i in range(len(points))])
+        points = torch.cat(points)
+        n_points = len(points)
+        n_boxes = len(gt_bboxes)
+        boxes = torch.cat((gt_bboxes.gravity_center, gt_bboxes.tensor[:, 3:]), dim=1)
+        boxes = boxes.to(points.device).expand(n_points, n_boxes, 7)
+        points = points.unsqueeze(1).expand(n_points, n_boxes, 3)
+
+        # condition 1: fix level for label
+        label2level = gt_labels.new_tensor(self.label2level)
+        label_levels = label2level[gt_labels].unsqueeze(0).expand(n_points, n_boxes)
+        point_levels = torch.unsqueeze(levels, 1).expand(n_points, n_boxes)
+        level_condition = label_levels == point_levels
+
+        # condition 2: keep topk location per box by center distance
+        center = boxes[..., :3]
+        center_distances = torch.sum(torch.pow(center - points, 2), dim=-1)
+        center_distances = torch.where(level_condition, center_distances, float_max)
+        topk_distances = torch.topk(center_distances,
+                                    min(self.top_pts_threshold + 1, len(center_distances)),
+                                    largest=False, dim=0).values[-1]
+        topk_condition = center_distances < topk_distances.unsqueeze(0)
+
+        # condition 3.0: only closest object to point
+        center_distances = torch.sum(torch.pow(center - points, 2), dim=-1)
+        _, min_inds_ = center_distances.min(dim=1)
+
+        # condition 3: min center distance to box per point
+        center_distances = torch.where(topk_condition, center_distances, float_max)
+        min_values, min_ids = center_distances.min(dim=1)
+        min_inds = torch.where(min_values < float_max, min_ids, -1)
+        min_inds = torch.where(min_inds == min_inds_, min_ids, -1)
+
+        return min_inds

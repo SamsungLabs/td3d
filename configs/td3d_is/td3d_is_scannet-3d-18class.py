@@ -2,6 +2,10 @@ voxel_size = .02
 padding = .08
 n_points = 100000
 
+class_names = ('cabinet', 'bed', 'chair', 'sofa', 'table', 'door', 'window',
+               'bookshelf', 'picture', 'counter', 'desk', 'curtain',
+               'refrigerator', 'showercurtrain', 'toilet', 'sink', 'bathtub',
+               'garbagebin')
 model = dict(
     type='TD3DInstanceSegmentor',
     voxel_size=voxel_size,
@@ -14,14 +18,14 @@ model = dict(
         type='TD3DInstanceHead',
         in_channels=128,
         n_reg_outs=6,
-        n_classes=18,
+        n_classes=len(class_names),
         n_levels=4,
         padding=padding,
         voxel_size=voxel_size,
         unet=dict(
             type='MinkUNet14B', 
             in_channels=32, 
-            out_channels=18 + 1,
+            out_channels=len(class_names) + 1,
             D=3),
         first_assigner=dict(
             type='NgfcV2Assigner',
@@ -65,10 +69,6 @@ workflow = [('train', 1)]
 
 dataset_type = 'ScanNetInstanceSegV2Dataset'
 data_root = './data/scannet/'
-class_names = ('cabinet', 'bed', 'chair', 'sofa', 'table', 'door', 'window',
-               'bookshelf', 'picture', 'counter', 'desk', 'curtain',
-               'refrigerator', 'showercurtrain', 'toilet', 'sink', 'bathtub',
-               'garbagebin')
 
 train_pipeline = [
     dict(
@@ -82,8 +82,10 @@ train_pipeline = [
         type='LoadAnnotations3D',
         with_mask_3d=True,
         with_seg_3d=True),
-    dict(type='GlobalAlignment', rotation_axis=2),
-    dict(type='PointSample', num_points=n_points),
+    dict(
+        type='GlobalAlignment', rotation_axis=2),
+    dict(
+        type='PointSample', num_points=n_points),
     dict(
         type='PointSegClassMappingV2',
         valid_cat_ids=(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 24, 28,
@@ -95,12 +97,20 @@ train_pipeline = [
         flip_ratio_bev_horizontal=0.5,
         flip_ratio_bev_vertical=0.5),
     dict(
-        type='GlobalRotScaleTrans',
+        type='Elastic'),
+    dict(
+        type='MiniMosaic',
+        remaining_points_thr=0.3,
+        n_src_points=n_points),
+    dict(
+        type='GlobalRotScaleTransV2',
         rot_range_z=[-3.14, 3.14],
         rot_range_x_y=[-0.1308, 0.1308],
         scale_ratio_range=[.8, 1.2],
         translation_std=[.1, .1, .1],
         shift_height=False),
+    dict(
+        type='BboxRecalculation'),
     dict(type='NormalizePointsColor', color_mean=None),
     dict(type='DefaultFormatBundle3D', class_names=class_names),
     dict(type='Collect3D', keys=['points', 'gt_bboxes_3d', 'gt_labels_3d',

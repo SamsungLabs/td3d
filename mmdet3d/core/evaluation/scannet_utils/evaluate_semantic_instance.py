@@ -27,6 +27,8 @@ def evaluate_matches(matches, class_labels, options):
     # results: class x overlap
     ap = np.zeros((len(dist_threshes), len(class_labels), len(overlaps)),
                   np.float)
+    pr_rc = np.zeros((2, len(class_labels), len(overlaps)),
+                  np.float)
     for di, (min_region_size, distance_thresh, distance_conf) in enumerate(
             zip(min_region_sizes, dist_threshes, dist_confs)):
         for oi, overlap_th in enumerate(overlaps):
@@ -48,7 +50,7 @@ def evaluate_matches(matches, class_labels, options):
                     # filter groups in ground truth
                     gt_instances = [
                         gt for gt in gt_instances
-                        if gt['instance_id'] >= 1000 and gt['vert_count'] >=
+                        if gt['vert_count'] >=
                         min_region_size and gt['med_dist'] <= distance_thresh
                         and gt['dist_conf'] >= distance_conf
                     ]
@@ -167,6 +169,12 @@ def evaluate_matches(matches, class_labels, options):
                     precision[-1] = 1.
                     recall[-1] = 0.
 
+                    #compute optimal precision and recall, based on f1_score
+                    f1_score = 2 * precision * recall / (precision + recall + 0.0001)
+                    f1_argmax = f1_score.argmax()
+                    best_pr = precision[f1_argmax]
+                    best_rc = recall[f1_argmax]
+
                     # compute average of precision-recall curve
                     recall_for_conv = np.copy(recall)
                     recall_for_conv = np.append(recall_for_conv[0],
@@ -183,10 +191,13 @@ def evaluate_matches(matches, class_labels, options):
                 else:
                     ap_current = float('nan')
                 ap[di, li, oi] = ap_current
-    return ap
+                pr_rc[0, li, oi] = best_pr
+                pr_rc[1, li, oi] = best_rc
+
+    return ap, pr_rc
 
 
-def compute_averages(aps, options, class_labels):
+def compute_averages(aps, pr_rc, options, class_labels):
     """Averages AP scores for all categories.
 
     Args:
@@ -206,6 +217,8 @@ def compute_averages(aps, options, class_labels):
     avg_dict['all_ap'] = np.nanmean(aps[d_inf, :, o_all_but25])
     avg_dict['all_ap_50%'] = np.nanmean(aps[d_inf, :, o50])
     avg_dict['all_ap_25%'] = np.nanmean(aps[d_inf, :, o25])
+    avg_dict['all_prec_50%'] = np.nanmean(pr_rc[0, :, o50])
+    avg_dict['all_rec_50%'] = np.nanmean(pr_rc[1, :, o50])
     avg_dict['classes'] = {}
     for (li, label_name) in enumerate(class_labels):
         avg_dict['classes'][label_name] = {}
@@ -215,6 +228,10 @@ def compute_averages(aps, options, class_labels):
                                                                   o50])
         avg_dict['classes'][label_name]['ap25%'] = np.average(aps[d_inf, li,
                                                                   o25])
+        avg_dict['classes'][label_name]['prec50%'] = np.average(pr_rc[0, li,
+                                                                  o50])
+        avg_dict['classes'][label_name]['rec50%'] = np.average(pr_rc[1, li,
+                                                                  o50])
     return avg_dict
 
 
@@ -322,8 +339,8 @@ def scannet_eval(preds, gts, options, valid_class_ids, class_labels,
         matches[matches_key]['gt'] = gt2pred
         matches[matches_key]['pred'] = pred2gt
 
-    ap_scores = evaluate_matches(matches, class_labels, options)
-    avgs = compute_averages(ap_scores, options, class_labels)
+    ap_scores, pr_rc = evaluate_matches(matches, class_labels, options)
+    avgs = compute_averages(ap_scores, pr_rc, options, class_labels)
     return avgs
 
 

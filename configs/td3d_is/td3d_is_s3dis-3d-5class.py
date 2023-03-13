@@ -2,6 +2,9 @@ voxel_size = .02
 padding = .08
 n_points = 100000
 
+class_names = ('ceiling', 'floor', 'wall', 'beam', 'column', 'window', 'door',
+               'table', 'chair', 'sofa', 'bookcase', 'board', 'clutter')
+
 model = dict(
     type='TD3DInstanceSegmentor',
     voxel_size=voxel_size,
@@ -14,20 +17,19 @@ model = dict(
         type='TD3DInstanceHead',
         in_channels=128,
         n_reg_outs=6,
-        n_classes=5,
+        n_classes=len(class_names),
         n_levels=4,
         padding=padding,
         voxel_size=voxel_size,
         unet=dict(
             type='MinkUNet14B', 
             in_channels=32, 
-            out_channels=5 + 1,
+            out_channels=len(class_names) + 1,
             D=3),
         first_assigner=dict(
-            type='NgfcV2Assigner',
-            min_pts_threshold=18,
-            top_pts_threshold=8,
-            padding=padding),
+            type='S3DISAssigner',
+            top_pts_threshold=6,
+            label2level=[3, 3, 3, 3, 2, 2, 2, 2, 1, 2, 2, 1, 1]),
         second_assigner=dict(
             type='MaxIoU3DAssigner',
             threshold=.25),
@@ -36,11 +38,11 @@ model = dict(
             voxel_size=voxel_size,
             padding=padding,
             min_pts_threshold=10)),
-    train_cfg=dict(num_rois=2),
+    train_cfg=dict(num_rois=1),
     test_cfg=dict(
-        nms_pre=800,
-        iou_thr=.4,
-        score_thr=.06,
+        nms_pre=500,
+        iou_thr=.2,
+        score_thr=.05,
         binary_score_thr=0.2))
 
 optimizer = dict(type='AdamW', lr=0.001, weight_decay=0.0001)
@@ -66,7 +68,7 @@ workflow = [('train', 1)]
 dataset_type = 'S3DISInstanceSegDataset'
 data_root = './data/s3dis/'
 
-class_names = ('table', 'chair', 'sofa', 'bookcase', 'board')
+
 train_area = [1, 2, 3, 4, 6]
 test_area = 5
 
@@ -84,7 +86,7 @@ train_pipeline = [
         with_seg_3d=True),
     dict(type='PointSample', num_points=n_points),
     dict(type='PointSegClassMappingV2',
-        valid_cat_ids=(7, 8, 9, 10, 11),
+        valid_cat_ids=tuple(range(len(class_names))),
         max_cat_id=13),
     dict(
         type='RandomFlip3D',
@@ -93,11 +95,12 @@ train_pipeline = [
         flip_ratio_bev_vertical=0.5),
     dict(
         type='GlobalRotScaleTrans',
-        rot_range_z=[-3.14, 3.14],
-        rot_range_x_y=[-0.1308, 0.1308],
-        scale_ratio_range=[.8, 1.2],
+        rot_range=[0, 0],
+        scale_ratio_range=[0.95, 1.05],
         translation_std=[.1, .1, .1],
         shift_height=False),
+    dict(
+        type='BboxRecalculation'),
     dict(type='NormalizePointsColor', color_mean=None),
     dict(type='DefaultFormatBundle3D', class_names=class_names),
     dict(type='Collect3D', keys=['points', 'gt_bboxes_3d', 'gt_labels_3d',
@@ -126,8 +129,8 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=6,
-    workers_per_gpu=10,
+    samples_per_gpu=4,
+    workers_per_gpu=6,
     train=dict(
         type='RepeatDataset',
         times=13,
