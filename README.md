@@ -1,10 +1,9 @@
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/top-down-beats-bottom-up-in-3d-instance/3d-instance-segmentation-on-s3dis)](https://paperswithcode.com/sota/3d-instance-segmentation-on-s3dis?p=top-down-beats-bottom-up-in-3d-instance)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/top-down-beats-bottom-up-in-3d-instance/3d-instance-segmentation-on-scannetv2)](https://paperswithcode.com/sota/3d-instance-segmentation-on-scannetv2?p=top-down-beats-bottom-up-in-3d-instance)
 
 ## TD3D: Top-Down Beats Bottom-Up in 3D Instance Segmentation
 
 **News**:
- * :fire: February 6, 2023. We achieved SOTA results on the S3DIS validation subset (mAP@50) and ScanNet test subset (mAP@25).
+ * :fire: February 6, 2023. We achieved SOTA results on the ScanNet test subset (mAP@25).
  * :fire: February 2023. The source code has been published.
  
 
