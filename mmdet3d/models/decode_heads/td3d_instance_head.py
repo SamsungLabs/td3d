@@ -624,8 +624,6 @@ class S3DISAssigner:
     def __init__(self, top_pts_threshold, label2level):
         # top_pts_threshold: per box
         # label2level: list of len n_classes
-        #     scannet: [0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0]
-        #       s3dis: [1, 0, 1, 1, 0]
         self.top_pts_threshold = top_pts_threshold
         self.label2level = label2level
 
