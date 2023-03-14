@@ -3,7 +3,7 @@
 ## TD3D: Top-Down Beats Bottom-Up in 3D Instance Segmentation
 
 **News**:
- * :fire: March 14, 2023. We fixed bugs in evaluation script for S3DIS dataset. 
+ * March 14, 2023. We fixed bugs in evaluation script for S3DIS dataset. 
  * :fire: February 6, 2023. We achieved SOTA results on the ScanNet test subset (mAP@25).
  * :fire: February 2023. The source code has been published.
  
