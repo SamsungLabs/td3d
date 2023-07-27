@@ -23,6 +23,7 @@ from .pipelines import (AffineResize, BackgroundPointsFilter, GlobalAlignment,
 from .s3dis_dataset import S3DISDataset, S3DISSegDataset, S3DISInstanceSegDataset
 from .scannet_dataset import (ScanNetDataset, ScanNetInstanceSegDataset,
                               ScanNetSegDataset, ScanNetInstanceSegV2Dataset)
+from .structured3d_dataset import (Structured3DDataset)
 from .semantickitti_dataset import SemanticKITTIDataset
 from .sunrgbd_dataset import SUNRGBDDataset
 from .utils import get_loading_pipeline
@@ -41,5 +42,4 @@ __all__ = [
     'LoadPointsFromMultiSweeps', 'WaymoDataset', 'BackgroundPointsFilter',
     'VoxelBasedPointSampler', 'get_loading_pipeline', 'RandomDropPointsColor',
     'RandomJitterPoints', 'ObjectNameFilter', 'AffineResize',
-    'RandomShiftScale', 'LoadPointsFromDict', 'PIPELINES'
-]
+    'RandomShiftScale', 'LoadPointsFromDict', 'PIPELINES', 'Structured3DDataset']

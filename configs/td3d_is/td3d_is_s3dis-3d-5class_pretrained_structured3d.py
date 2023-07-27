@@ -40,9 +40,9 @@ model = dict(
             min_pts_threshold=10)),
     train_cfg=dict(num_rois=1),
     test_cfg=dict(
-        nms_pre=1000,
+        nms_pre=850,
         iou_thr=.2,
-        score_thr=.05,
+        score_thr=.055,
         binary_score_thr=0.2))
 
 optimizer = dict(type='AdamW', lr=0.001, weight_decay=0.0001)
@@ -165,3 +165,5 @@ data = dict(
         classes=class_names,
         test_mode=True,
         box_type_3d='Depth'))
+
+load_from = 'work_dirs/td3d_is_structured3d-3d-5class/epoch_12.pth'
