@@ -2,9 +2,9 @@ voxel_size = .02
 padding = .08
 n_points = 100000
 
-class_names = ('ceiling', 'floor', 'wall', 'beam', 'column', 'window', 'door',
-               'table', 'chair', 'sofa', 'bookcase', 'board', 'clutter')
-
+class_names = ('cabinet', 'bed', 'chair', 'sofa', 'table', 'door', 'window', 'picture', 'counter', 
+                    'desk', 'shelves', 'curtain', 'dresser', 'pillow', 'mirror', 'fridge', 'television', 
+                    'night stand', 'toilet', 'sink', 'lamp', 'bathtub', 'structure', 'furniture', 'prop')
 model = dict(
     type='TD3DInstanceSegmentor',
     voxel_size=voxel_size,
@@ -29,7 +29,7 @@ model = dict(
         first_assigner=dict(
             type='S3DISAssigner',
             top_pts_threshold=6,
-            label2level=[3, 3, 3, 3, 2, 2, 2, 2, 1, 2, 2, 1, 1]),
+            label2level=[2, 2, 1, 2, 2, 2, 2, 1, 2, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 1]),
         second_assigner=dict(
             type='MaxIoU3DAssigner',
             threshold=.25),
@@ -38,21 +38,24 @@ model = dict(
             voxel_size=voxel_size,
             padding=padding,
             min_pts_threshold=10)),
-    train_cfg=dict(num_rois=1,
-                   disable_unet=False),
+    train_cfg=dict(num_rois=1, 
+                   disable_unet=True),
     test_cfg=dict(
-        nms_pre=100,
+        nms_pre=100, # todo was 1200
         iou_thr=.4,
-        score_thr=.15,
+        score_thr=.3, # was .1
         binary_score_thr=0.2))
 
 optimizer = dict(type='AdamW', lr=0.001, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=dict(max_norm=10, norm_type=2))
-lr_config = dict(policy='step', warmup=None, step=[28, 32])
-runner = dict(type='EpochBasedRunner', max_epochs=33)
+lr_config = dict(policy='step', warmup=None, step=[8, 11])
+runner = dict(type='EpochBasedRunner', max_epochs=12)
 custom_hooks = [dict(type='EmptyCacheHook', after_iter=True)]
 
-checkpoint_config = dict(interval=1, max_keep_ckpts=50)
+checkpoint_config = dict(interval=1, max_keep_ckpts=-1)
+
+
+
 log_config = dict(
     interval=50,
     hooks=[
@@ -62,16 +65,12 @@ log_config = dict(
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = None
-load_from = "work_dirs/td3d_is_structured3d-3d-25class_new_ass/epoch_12.pth"
+load_from = None
 resume_from = None
 workflow = [('train', 1)]
 
-dataset_type = 'S3DISInstanceSegDataset'
-data_root = './data/s3dis/'
-
-
-train_area = [1, 2, 3, 4, 6]
-test_area = 5
+dataset_type = 'Structured3DDataset'
+data_root = './data/Structured3D/bins1/'
 
 train_pipeline = [
     dict(
@@ -85,19 +84,30 @@ train_pipeline = [
         type='LoadAnnotations3D',
         with_mask_3d=True,
         with_seg_3d=True),
-    dict(type='PointSample', num_points=n_points),
-    dict(type='PointSegClassMappingV2',
-        valid_cat_ids=tuple(range(len(class_names))),
-        max_cat_id=13),
+    # dict(
+    #     type='GlobalAlignment', rotation_axis=2),
+    dict(
+        type='PointSample', num_points=n_points),
+    dict(
+        type='PointSegClassMappingV2',
+        valid_cat_ids=(3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 24, 25, 32, 33, 34, 35, 36, 38, 39, 40),
+        max_cat_id=41),
     dict(
         type='RandomFlip3D',
         sync_2d=False,
         flip_ratio_bev_horizontal=0.5,
         flip_ratio_bev_vertical=0.5),
+    # dict(
+    #     type='Elastic'),
+    # dict(
+    #     type='MiniMosaic',
+    #     remaining_points_thr=0.3,
+    #     n_src_points=n_points),
     dict(
-        type='GlobalRotScaleTrans',
-        rot_range=[0, 0],
-        scale_ratio_range=[0.95, 1.05],
+        type='GlobalRotScaleTransV2',
+        rot_range_z=[0, 0], # todo
+        rot_range_x_y=[-0.1308, 0.1308],
+        scale_ratio_range=[.8, 1.2],
         translation_std=[.1, .1, .1],
         shift_height=False),
     dict(
@@ -129,29 +139,25 @@ test_pipeline = [
             dict(type='Collect3D', keys=['points'])
         ])
 ]
+
 data = dict(
-    samples_per_gpu=4,
-    workers_per_gpu=6,
+    samples_per_gpu=6,
+    workers_per_gpu=10,
     train=dict(
         type='RepeatDataset',
-        times=13,
+        times=1, # todo
         dataset=dict(
-            type='ConcatDataset',
-            datasets=[
-                dict(
-                    type=dataset_type,
-                    data_root=data_root,
-                    ann_file=data_root + f's3dis_tr3d_infos_Area_{i}.pkl',
-                    pipeline=train_pipeline,
-                    filter_empty_gt=True,
-                    classes=class_names,
-                    box_type_3d='Depth') for i in train_area
-            ],
-            separate_eval=False)),
+            type=dataset_type,
+            data_root=data_root,
+            ann_file=data_root + 'structured3d_infos_train_old.pkl',
+            pipeline=train_pipeline,
+            filter_empty_gt=True,
+            classes=class_names,
+            box_type_3d='Depth')),
     val=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file=data_root + f's3dis_tr3d_infos_Area_{test_area}.pkl',
+        ann_file=data_root + 'structured3d_infos_val_old.pkl',
         pipeline=test_pipeline,
         filter_empty_gt=False,
         classes=class_names,
@@ -160,9 +166,10 @@ data = dict(
     test=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file=data_root + f's3dis_tr3d_infos_Area_{test_area}.pkl',
+        ann_file=data_root + 'structured3d_infos_val_old.pkl',
         pipeline=test_pipeline,
         filter_empty_gt=False,
         classes=class_names,
         test_mode=True,
-        box_type_3d='Depth'))
+        box_type_3d='Depth')
+)

@@ -397,6 +397,9 @@ class TD3DInstanceHead(BaseModule):
         bbox_preds, cls_preds, locations = self._forward_first(x[1:])
         losses = self._loss_first(bbox_preds, cls_preds, locations, 
                             gt_bboxes, gt_labels, img_metas)
+        if self.train_cfg.disable_unet:
+            return losses
+
         #second stage
         bbox_list = self._get_bboxes_train(bbox_preds, cls_preds, locations, gt_bboxes, gt_labels, img_metas)
         assigned_bbox_list = []

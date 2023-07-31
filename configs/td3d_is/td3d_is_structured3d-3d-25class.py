@@ -70,7 +70,7 @@ resume_from = None
 workflow = [('train', 1)]
 
 dataset_type = 'Structured3DDataset'
-data_root = './data/bins1/'
+data_root = './data/Structured3D/bins1/'
 
 train_pipeline = [
     dict(
@@ -105,7 +105,7 @@ train_pipeline = [
     #     n_src_points=n_points),
     dict(
         type='GlobalRotScaleTransV2',
-        rot_range_z=[-0, 0], # todo
+        rot_range_z=[0, 0], # todo
         rot_range_x_y=[-0.1308, 0.1308],
         scale_ratio_range=[.8, 1.2],
         translation_std=[.1, .1, .1],
