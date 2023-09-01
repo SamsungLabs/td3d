@@ -28,9 +28,3 @@ RUN pip install -U git+https://github.com/NVIDIA/MinkowskiEngine@405b39cb7e68c2e
     --install-option="--blas=openblas" \
     --install-option="--force_cuda"
 
-# Install MinkowskiEngine
-# Feel free to skip nvidia-cuda-dev if minkowski installation is fine
-#RUN apt-get update && apt-get -y install libopenblas-dev
-#RUN PATH=/usr/local/cuda/bin:$PATH TORCH_CUDA_ARCH_LIST="6.1 7.0 8.6" pip install -U git+https://github.com/NVIDIA/MinkowskiEngine -v --no-deps \
-#    --install-option="--blas=openblas" \
-#    --install-option="--force_cuda"
