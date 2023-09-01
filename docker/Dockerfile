@@ -1,5 +1,5 @@
-ARG PYTORCH="1.12.1"
-ARG CUDA="11.3"
+ARG PYTORCH="1.9.1"
+ARG CUDA="11.1"
 ARG CUDNN="8"
 
 FROM pytorch/pytorch:${PYTORCH}-cuda${CUDA}-cudnn${CUDNN}-devel
@@ -23,14 +23,14 @@ WORKDIR /mmdetection3d
 RUN pip install --no-cache-dir -e .
 
 # Install MinkowskiEngine
-#RUN apt-get install -y libopenblas-dev
-#RUN pip install -U git+https://github.com/NVIDIA/MinkowskiEngine@405b39cb7e68c2ec1b4ac8c4b4ca9fa6fcfcb2fc -v --no-deps \
-#    --install-option="--blas=openblas" \
-#    --install-option="--force_cuda"
+RUN apt-get install -y libopenblas-dev
+RUN pip install -U git+https://github.com/NVIDIA/MinkowskiEngine@405b39cb7e68c2ec1b4ac8c4b4ca9fa6fcfcb2fc -v --no-deps \
+    --install-option="--blas=openblas" \
+    --install-option="--force_cuda"
 
 # Install MinkowskiEngine
 # Feel free to skip nvidia-cuda-dev if minkowski installation is fine
-RUN apt-get update && apt-get -y install libopenblas-dev
-RUN PATH=/usr/local/cuda/bin:$PATH TORCH_CUDA_ARCH_LIST="6.1 7.0 8.6" pip install -U git+https://github.com/NVIDIA/MinkowskiEngine -v --no-deps \
-    --install-option="--blas=openblas" \
-    --install-option="--force_cuda"
+#RUN apt-get update && apt-get -y install libopenblas-dev
+#RUN PATH=/usr/local/cuda/bin:$PATH TORCH_CUDA_ARCH_LIST="6.1 7.0 8.6" pip install -U git+https://github.com/NVIDIA/MinkowskiEngine -v --no-deps \
+#    --install-option="--blas=openblas" \
+#    --install-option="--force_cuda"
