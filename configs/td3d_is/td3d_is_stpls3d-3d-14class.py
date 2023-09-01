@@ -1,4 +1,4 @@
-voxel_size = .02
+voxel_size = 0.1
 padding = .08
 n_points = 100000
 
@@ -26,10 +26,9 @@ model = dict(
             out_channels=len(class_names) + 1,
             D=3),
         first_assigner=dict(
-            type='NgfcV2Assigner',
-            min_pts_threshold=18,
-            top_pts_threshold=8,
-            padding=padding),
+            type='S3DISAssigner',
+            top_pts_threshold=6,
+            label2level=[3, 1, 2, 3, 2, 2, 3, 2, 1, 1, 2, 1, 2, 3]),
         second_assigner=dict(
             type='MaxIoU3DAssigner',
             threshold=.25),
@@ -40,9 +39,9 @@ model = dict(
             min_pts_threshold=10)),
     train_cfg=dict(num_rois=1),
     test_cfg=dict(
-        nms_pre=300,
+        nms_pre=100,
         iou_thr=.4,
-        score_thr=.05,
+        score_thr=.15,
         binary_score_thr=0.2))
 
 optimizer = dict(type='AdamW', lr=0.001, weight_decay=0.0001)
@@ -128,8 +127,8 @@ test_pipeline = [
 ]
 
 data = dict(
-    samples_per_gpu=2,
-    workers_per_gpu=3,
+    samples_per_gpu=4,
+    workers_per_gpu=5,
     train=dict(
         type='RepeatDataset',
         times=3,

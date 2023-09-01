@@ -27,4 +27,3 @@ RUN apt-get install -y libopenblas-dev
 RUN pip install -U git+https://github.com/NVIDIA/MinkowskiEngine@405b39cb7e68c2ec1b4ac8c4b4ca9fa6fcfcb2fc -v --no-deps \
     --install-option="--blas=openblas" \
     --install-option="--force_cuda"
-
