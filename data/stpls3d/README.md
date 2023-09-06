@@ -22,4 +22,3 @@ stpls3d
 ├── stpls3d_infos_train.pkl
 ├── stpls3d_infos_val.pkl
 ```
-
