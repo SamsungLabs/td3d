@@ -188,8 +188,12 @@ def evaluate_matches(matches, class_labels, options):
 
                 elif has_gt:
                     ap_current = 0.0
+                    best_pr = 0
+                    best_rc = 0
                 else:
                     ap_current = float('nan')
+                    best_pr = float('nan')
+                    best_rc = float('nan')
                 ap[di, li, oi] = ap_current
                 pr_rc[0, li, oi] = best_pr
                 pr_rc[1, li, oi] = best_rc

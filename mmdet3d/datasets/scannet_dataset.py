@@ -734,7 +734,7 @@ class ScanNetInstanceSegV2Dataset(ScanNetDataset):
                 pred_instance_masks_label[pred_instance_masks_sort[i].bool()] = i
 
             palette = np.random.random((max(max(pred_instance_masks_label) + 2, max(gt_instance_mask) + 2), 3)) * 255
-            palette[-1] = 255
+            palette[-1] = 200
 
             show_seg_result(points, gt_instance_mask,
                             pred_instance_masks_label, out_dir, file_name,
