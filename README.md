@@ -18,7 +18,7 @@ This repository contains an implementation of TD3D, a 3D instance segmentation m
 > [Anna Vorontsova](https://github.com/highrut),
 > [Anton Konushin](https://scholar.google.com/citations?user=ZT_k-wMAAAAJ)
 > <br>
-> Samsung AI Center Moscow <br>
+> Samsung Research <br>
 > https://arxiv.org/abs/2302.02871
 
 > 
