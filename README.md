@@ -4,6 +4,7 @@
 ## TD3D: Top-Down Beats Bottom-Up in 3D Instance Segmentation
 
 **News**:
+ * :fire: October, 2023. TD3D is accepted at [WACV2024](https://wacv2024.thecvf.com/).
  * :fire: September 6 2023. STPLS3D dataset has been added.
  * March 14, 2023. We fixed bugs in evaluation script for S3DIS dataset. Still outperforming our competitors w/ ScanNet pretraining (SoftGroup) and w/o ScanNet pretraining (SSTNet, MaskGroup). 
  * :fire: February 6, 2023. We achieved SOTA results on the ScanNet test subset (mAP@25).
